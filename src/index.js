@@ -4,7 +4,6 @@ require('./db/mongoose')
 
 
 const User = require('./model/user')
-const Task = require('./model/task')
 
 const port = process.env.PORT || 3000
 app.use(express.json())
@@ -17,3 +16,11 @@ app.use(taskRouter)
 app.listen(port,()=>{
     console.log("Server at "+port)
 })
+
+const main = async ()=>{
+    const user = await User.findById('5d34c3f071de591ab461bf91')
+    await user.populate('tasks').execPopulate()
+    console.log(user.tasks)
+}
+
+main()

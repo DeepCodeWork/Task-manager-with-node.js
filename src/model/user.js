@@ -62,12 +62,28 @@ userSchema.statics.findByCredentials = async (email,password)=>{
     throw new Error("Password not found")
 }
 
+userSchema.virtual('tasks',{
+    ref:'Task',
+    localField:'_id',
+    foreignField:'owner'
+})
+
+//generating authentication token
 userSchema.methods.generateAuthToken = async function(){
     const user = this
     const token = jwt.sign({_id:user._id},'mynodeleanrning')
     user.Tokens = user.Tokens.concat({token})
     await user.save()
     return token
+}
+
+//deleting sensitive informmation from response data
+userSchema.methods.toJSON = function(){
+    const user = this
+    const userObject = user.toObject()
+    delete userObject.password
+    delete userObject.Tokens
+    return userObject
 }
 
 //Hashing the password
