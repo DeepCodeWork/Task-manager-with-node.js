@@ -18,7 +18,7 @@ const taskSchema = new mongoose.Schema({
         required:true,
         ref:'User'
     }
-})
+},{timestamps:true})
 
 //For any pre conditions before saving the docs
 taskSchema.pre('save',function(next){

@@ -2,6 +2,7 @@ const mongoose = require('mongoose')
 const validator = require('validator')
 const bcrypt = require('bcrypt')
 const jwt = require('jsonwebtoken')
+const Task = require('../model/task')
 
 //defining collections 
 const userSchema =new mongoose.Schema({
@@ -47,6 +48,13 @@ const userSchema =new mongoose.Schema({
               required:true
           }
       }]
+    },{timestamps:true
+    })
+
+    userSchema.virtual('tasks',{
+        ref:'Task',
+        localField:'_id',
+        foreignField:'owner'
     })
 
 //model static functions
@@ -61,12 +69,6 @@ userSchema.statics.findByCredentials = async (email,password)=>{
     }
     throw new Error("Password not found")
 }
-
-userSchema.virtual('tasks',{
-    ref:'Task',
-    localField:'_id',
-    foreignField:'owner'
-})
 
 //generating authentication token
 userSchema.methods.generateAuthToken = async function(){
@@ -92,6 +94,13 @@ userSchema.pre('save',async function(next){
     if(user.isModified('password')){
         user.password = await bcrypt.hash(user.password,8)
     }
+    next()
+})
+
+//Deleting all the task of the user before deleting that user
+userSchema.pre('remove', async function(next){
+    const user = this
+    await Task.deleteMany({owner:user._id})
     next()
 })
 

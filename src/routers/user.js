@@ -22,7 +22,7 @@ router.post('/users/logout',auth,async (req,res)=>{
             return token.token!==req.token
         })
         req.user.save()
-        await res.send()
+        await res.send("Logged out succesfully")
     } catch (error) {
         res.status(401).send(error)
     }

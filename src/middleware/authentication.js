@@ -12,13 +12,13 @@ const auth = async (req,res,next)=>{
         const user = await User.findOne({_id:decoded_token._id,'Tokens.token':token})
     if(!user){
         console.log("aaaaa")//Debugging
-        throw new Error("Please authenticate")
+        throw new Error()
     }
         req.token=token
         req.user = user
         next()
-    } catch (error) {
-        res.status(400).send(error)
+    } catch (e) {
+        res.status(400).send("Please authenticate")
     }
 }
 
